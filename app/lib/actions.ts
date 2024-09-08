@@ -41,7 +41,7 @@ export type StudentState = {
     mobile2?: string[];
     address?: string[];
   };
-  message?: string | '';
+  message?: string | null;
 };
 
 export type State = {

@@ -99,7 +99,7 @@ export type InvoiceForm = {
 };
 
 export type StudentForm = {
-  id: number;
+  id: string;
   name: string;
   fathername: string;
   surname: string;

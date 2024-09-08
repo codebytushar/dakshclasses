@@ -16,7 +16,7 @@ import { useActionState } from 'react';
 
 
 export default function Form({ customers }: { customers: CustomerField[] }) {
-  const initialState: StudentState = { message: null, errors: {} };
+  const initialState: StudentState = { message: '', errors: {} };
   const [state, formAction] = useActionState(createStudent, initialState);
 
   return (

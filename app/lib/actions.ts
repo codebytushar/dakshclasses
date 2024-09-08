@@ -41,7 +41,7 @@ export type StudentState = {
     mobile2?: string[];
     address?: string[];
   };
-  message?: string | null;
+  message?: string | '';
 };
 
 export type State = {
@@ -147,7 +147,7 @@ export async function updateInvoice(
   const CreateStudent = StudentSchema.omit({});
 
 
-export async function createStudent(prevState: State, formData: FormData) {
+export async function createStudent(prevState: StudentState, formData: FormData) {
 
     //   const rawFormData = Object.fromEntries(formData.entries())
 

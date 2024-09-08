@@ -6,6 +6,8 @@ import {
   InvoicesTable,
   LatestInvoiceRaw,
   Revenue,
+  StudentForm,
+  StudentsTable,
 } from './definitions';
 import { formatCurrency } from './utils';
 
@@ -119,6 +121,35 @@ export async function fetchFilteredInvoices(
   }
 }
 
+export async function fetchFilteredStudents(
+  query: string,
+  currentPage: number,
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const studentmaster = await sql<StudentsTable>`
+    SELECT     
+        studentmaster.studentid,
+        studentmaster.name,
+        studentmaster.fathername,
+        studentmaster.surname,
+        studentmaster.dob,
+        studentmaster.mobile1,
+        studentmaster.mobile2,
+        studentmaster.address
+      FROM studentmaster
+      ORDER BY studentmaster.studentid DESC
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+    `;
+
+    return studentmaster.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch studentmaster.');
+  }
+}
+
 export async function fetchInvoicesPages(query: string) {
   try {
     const count = await sql`SELECT COUNT(*)
@@ -162,6 +193,29 @@ export async function fetchInvoiceById(id: string) {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch invoice.');
+  }
+}
+
+export async function fetchStudentById(id: string) {
+  try {
+    const data = await sql<StudentForm>`
+      SELECT
+        studentmaster.id,
+        studentmaster.name,
+        studentmaster.fathername,
+        studentmaster.surname,
+        studentmaster.dob,
+        studentmaster.mobile1,
+        studentmaster.mobile2,
+        studentmaster.address
+      FROM studentmaster
+      WHERE studentmaster.id = ${id};
+    `;
+
+    return data.rows[0];
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch student.');
   }
 }
 

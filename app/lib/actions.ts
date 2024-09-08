@@ -21,6 +21,29 @@ const FormSchema = z.object({
   date: z.string(),
 });
 
+const StudentSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100, "Name must be at most 100 characters"),
+  fathername: z.string().min(1,"Father Name is required").max(100, "Father's Name must be at most 100 characters"),
+  surname: z.string().min(1,"Surname is Required").max(100, "Surname must be at most 100 characters"),
+  dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date of birth must be in YYYY-MM-DD format"),
+  mobile1: z.string().regex(/^\d{10,15}$/, "Mobile number 1 must be between 10 and 15 digits").optional(),
+  mobile2: z.string().regex(/^\d{10,15}$/, "Mobile number 2 must be between 10 and 15 digits"),
+  address: z.string().min(5,"Address is Required").max(255, "Address must be at most 255 characters"),
+});
+
+export type StudentState = {
+  errors?: {
+    name?: string[];
+    fathername?: string[];
+    surname?: string[];
+    dob?: string[];
+    mobile1?: string[];
+    mobile2?: string[];
+    address?: string[];
+  };
+  message?: string | null;
+};
+
 export type State = {
   errors?: {
     customerId?: string[];
@@ -118,6 +141,65 @@ export async function updateInvoice(
         return { message: 'Deleted Invoice.' };
       } catch (error) {
         return { message: 'Database Error: Failed to Delete Invoice.' };
+      }
+  }
+
+  const CreateStudent = StudentSchema.omit({});
+
+
+export async function createStudent(prevState: State, formData: FormData) {
+
+    //   const rawFormData = Object.fromEntries(formData.entries())
+
+
+    const validatedFields = CreateStudent.safeParse({
+        name: formData.get('name'),
+        fathername: formData.get('fathername'),
+        surname: formData.get('surname'),
+        dob: formData.get('dob'),
+        mobile1: formData.get('mobile1'),
+        mobile2: formData.get('mobile2'),
+        address: formData.get('address'),
+       
+    });
+
+    console.log(validatedFields.success)
+  
+    if (!validatedFields.success) {
+      return {
+        errors: validatedFields.error.flatten().fieldErrors,
+        message: 'Missing Fields. Failed to Create Student.',
+      };
+    }
+
+    const { name, fathername,surname,dob,mobile1,mobile2,address } = validatedFields.data;
+
+    try {
+        await sql`
+          INSERT INTO studentmaster (name, fathername,surname,dob,mobile1,mobile2,address)
+          VALUES (${name}, ${fathername}, ${surname}, ${dob}, ${mobile1}, ${mobile2}, ${address})
+        `;
+      } catch (error) {
+        console.log(error)
+        return {
+          message: 'Database Error: Failed to Create Student.',
+        };
+      }
+
+revalidatePath('/dashboard/students');
+redirect('/dashboard/students');
+
+}
+
+  export async function deleteStudent(id: string) {
+    // throw new Error('Failed to Delete Invoice');
+    console.log("In deleteStudent " + id)
+    try {
+        await sql`DELETE FROM studentmaster WHERE studentid = ${id}`;
+        revalidatePath('/dashboard/students');
+        return { message: 'Deleted Student.' };
+      } catch (error) {
+        return { message: 'Database Error: Failed to Delete Student.' };
       }
   }
 

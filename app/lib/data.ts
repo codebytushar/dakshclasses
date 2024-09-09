@@ -1,11 +1,13 @@
 import { sql } from '@vercel/postgres';
 import {
+  AcademicTermForm,
   CustomerField,
   CustomersTableType,
   InvoiceForm,
   InvoicesTable,
   LatestInvoiceRaw,
   Revenue,
+  StandardsForm,
   StudentForm,
   StudentsTable,
 } from './definitions';
@@ -129,17 +131,30 @@ export async function fetchFilteredStudents(
 
   try {
     const studentmaster = await sql<StudentsTable>`
-    SELECT     
-        studentmaster.studentid,
-        studentmaster.name,
-        studentmaster.fathername,
-        studentmaster.surname,
-        studentmaster.dob,
-        studentmaster.mobile1,
-        studentmaster.mobile2,
-        studentmaster.address
-      FROM studentmaster
-      ORDER BY studentmaster.studentid DESC
+    SELECT 
+    sm.studentid,
+    sm.name,
+    sm.fathername,
+    sm.surname,
+    sm.dob,
+    sm.mobile1,
+    sm.mobile2,
+    sm.address,
+    s.standardid,
+    s.board,
+    e.termid
+FROM 
+    StudentMaster as sm
+LEFT JOIN 
+    Enrollment as e ON sm.studentid = e.studentid
+LEFT JOIN 
+    Standard as s ON e.standardid = s.standardid
+      WHERE
+        sm.name ILIKE ${`%${query}%`} OR
+        sm.surname ILIKE ${`%${query}%`} OR
+        sm.address ILIKE ${`%${query}%`} OR
+        sm.dob::text ILIKE ${`%${query}%`}
+      ORDER BY sm.studentid DESC
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `;
 
@@ -147,6 +162,26 @@ export async function fetchFilteredStudents(
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch studentmaster.');
+  }
+}
+
+export async function fetchStudentssPages(query: string) {
+  console.log(query)
+  try {
+    const count = await sql`SELECT COUNT(*)
+    FROM studentmaster
+    WHERE
+      studentmaster.name ILIKE ${`%${query}%`} OR
+      studentmaster.surname ILIKE ${`%${query}%`} OR
+      studentmaster.address ILIKE ${`%${query}%`} OR
+      studentmaster.dob::text ILIKE ${`%${query}%`}
+  `;
+
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch total number of students.');
   }
 }
 
@@ -200,7 +235,7 @@ export async function fetchStudentById(id: string) {
   try {
     const data = await sql<StudentForm>`
       SELECT
-        studentmaster.id,
+        studentmaster.studentid,
         studentmaster.name,
         studentmaster.fathername,
         studentmaster.surname,
@@ -209,13 +244,53 @@ export async function fetchStudentById(id: string) {
         studentmaster.mobile2,
         studentmaster.address
       FROM studentmaster
-      WHERE studentmaster.id = ${id};
+      WHERE studentmaster.studentid = ${id};
     `;
 
     return data.rows[0];
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch student.');
+  }
+}
+
+export async function fetchTerms() {
+  try {
+    const data = await sql<AcademicTermForm>`
+      SELECT
+        termid,
+        year,
+        semester,
+        startdate,
+        enddate
+      FROM academicterms
+      ORDER BY termid ASC
+    `;
+
+    const terms = data.rows;
+    return terms;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch academic terms.');
+  }
+}
+
+export async function fetchStandards() {
+  try {
+    const data = await sql<StandardsForm>`
+      SELECT
+        standardid,
+        board,
+        termid
+      FROM standard
+      ORDER BY standardid ASC
+    `;
+
+    const standards = data.rows;
+    return standards;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch Standards.');
   }
 }
 

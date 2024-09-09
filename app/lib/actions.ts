@@ -23,12 +23,18 @@ const FormSchema = z.object({
 
 const StudentSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name must be at most 100 characters"),
-  fathername: z.string().min(1,"Father Name is required").max(100, "Father's Name must be at most 100 characters"),
-  surname: z.string().min(1,"Surname is Required").max(100, "Surname must be at most 100 characters"),
-  dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date of birth must be in YYYY-MM-DD format"),
+  fathername: z.string().min(1, "Father Name is required").max(100, "Father's Name must be at most 100 characters"),
+  surname: z.string().min(1, "Surname is Required").max(100, "Surname must be at most 100 characters"),
+  dob: z.string().regex(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2}, \d{4}$/, {
+    message: "Date must be in the format mmm d, yyyy or mmm dd, yyyy",}),
   mobile1: z.string().regex(/^\d{10,15}$/, "Mobile number 1 must be between 10 and 15 digits").optional(),
   mobile2: z.string().regex(/^\d{10,15}$/, "Mobile number 2 must be between 10 and 15 digits"),
-  address: z.string().min(5,"Address is Required").max(255, "Address must be at most 255 characters"),
+  address: z.string().min(5, "Address is Required").max(255, "Address must be at most 255 characters"),
+});
+
+const EnrollStudentSchema = z.object({
+  termid: z.string().min(1, "Term ID is required"),
+  standardid: z.string().min(1, "Standard ID is required"),
 });
 
 export type StudentState = {
@@ -53,44 +59,53 @@ export type State = {
   message?: string | null;
 };
 
+export type EnrollStudentState = {
+  errors?: {
+    termid?: string[];
+    standardid?: string[];
+  };
+  message?: string | null;
+};
+
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 
 
 export async function createInvoice(prevState: State, formData: FormData) {
 
-    //   const rawFormData = Object.fromEntries(formData.entries())
+  //   const rawFormData = Object.fromEntries(formData.entries())
 
 
-    const validatedFields = CreateInvoice.safeParse({
-        customerId: formData.get('customerId'),
-        amount: formData.get('amount'),
-        status: formData.get('status'),
-    });
+  const validatedFields = CreateInvoice.safeParse({
+    customerId: formData.get('customerId'),
+    amount: formData.get('amount'),
+    status: formData.get('status'),
+  });
 
-    if (!validatedFields.success) {
-      return {
-        errors: validatedFields.error.flatten().fieldErrors,
-        message: 'Missing Fields. Failed to Create Invoice.',
-      };
-    }
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create Invoice.',
+    };
+  }
 
-    const { customerId, amount, status } = validatedFields.data;
+  const { customerId, amount, status } = validatedFields.data;
 
-    const amountInCents = amount * 100;
-    const date = new Date().toISOString().split('T')[0];
-    try {
-        await sql`
+  const amountInCents = amount * 100;
+  const date = new Date().toISOString().split('T')[0];
+  try {
+    await sql`
           INSERT INTO invoices (customer_id, amount, status, date)
           VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
         `;
-      } catch (error) {
-        return {
-          message: 'Database Error: Failed to Create Invoice.',
-        };
-      }
+  } catch (error) {
 
-revalidatePath('/dashboard/invoices');
-redirect('/dashboard/invoices');
+    return {
+      message: 'Database Error: Failed to Create Invoice.',
+    };
+  }
+
+  revalidatePath('/dashboard/invoices');
+  redirect('/dashboard/invoices');
 
 }
 
@@ -107,17 +122,17 @@ export async function updateInvoice(
     amount: formData.get('amount'),
     status: formData.get('status'),
   });
- 
+
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Update Invoice.',
     };
   }
- 
+
   const { customerId, amount, status } = validatedFields.data;
   const amountInCents = amount * 100;
- 
+
   try {
     await sql`
       UPDATE invoices
@@ -127,97 +142,170 @@ export async function updateInvoice(
   } catch (error) {
     return { message: 'Database Error: Failed to Update Invoice.' };
   }
- 
+
   revalidatePath('/dashboard/invoices');
   redirect('/dashboard/invoices');
 }
 
-  export async function deleteInvoice(id: string) {
-    // throw new Error('Failed to Delete Invoice');
+export async function deleteInvoice(id: string) {
+  // throw new Error('Failed to Delete Invoice');
 
-    try {
-        await sql`DELETE FROM invoices WHERE id = ${id}`;
-        revalidatePath('/dashboard/invoices');
-        return { message: 'Deleted Invoice.' };
-      } catch (error) {
-        return { message: 'Database Error: Failed to Delete Invoice.' };
-      }
+  try {
+    await sql`DELETE FROM invoices WHERE id = ${id}`;
+    revalidatePath('/dashboard/invoices');
+    return { message: 'Deleted Invoice.' };
+  } catch (error) {
+    return { message: 'Database Error: Failed to Delete Invoice.' };
   }
+}
 
-  const CreateStudent = StudentSchema.omit({});
+const CreateStudent = StudentSchema.omit({});
 
 
 export async function createStudent(prevState: StudentState, formData: FormData) {
 
-    //   const rawFormData = Object.fromEntries(formData.entries())
+  //   const rawFormData = Object.fromEntries(formData.entries())
 
 
-    const validatedFields = CreateStudent.safeParse({
-        name: formData.get('name'),
-        fathername: formData.get('fathername'),
-        surname: formData.get('surname'),
-        dob: formData.get('dob'),
-        mobile1: formData.get('mobile1'),
-        mobile2: formData.get('mobile2'),
-        address: formData.get('address'),
-       
-    });
+  const validatedFields = CreateStudent.safeParse({
+    name: formData.get('name'),
+    fathername: formData.get('fathername'),
+    surname: formData.get('surname'),
+    dob: formData.get('dob'),
+    mobile1: formData.get('mobile1'),
+    mobile2: formData.get('mobile2'),
+    address: formData.get('address'),
 
-    console.log(validatedFields.success)
-  
-    if (!validatedFields.success) {
-      return {
-        errors: validatedFields.error.flatten().fieldErrors,
-        message: 'Missing Fields. Failed to Create Student.',
-      };
-    }
+  });
 
-    const { name, fathername,surname,dob,mobile1,mobile2,address } = validatedFields.data;
+  console.log(validatedFields.success)
 
-    try {
-        await sql`
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create Student.',
+    };
+  }
+
+  const { name, fathername, surname, dob, mobile1, mobile2, address } = validatedFields.data;
+
+  try {
+    await sql`
           INSERT INTO studentmaster (name, fathername,surname,dob,mobile1,mobile2,address)
           VALUES (${name}, ${fathername}, ${surname}, ${dob}, ${mobile1}, ${mobile2}, ${address})
         `;
-      } catch (error) {
-        console.log(error)
-        return {
-          message: 'Database Error: Failed to Create Student.',
-        };
-      }
+  } catch (error) {
+    console.log(error)
+    return {
+      message: 'Database Error: Failed to Create Student.',
+    };
+  }
 
-revalidatePath('/dashboard/students');
-redirect('/dashboard/students');
+  revalidatePath('/dashboard/students');
+  redirect('/dashboard/students');
 
 }
 
-  export async function deleteStudent(id: string) {
-    // throw new Error('Failed to Delete Invoice');
-    console.log("In deleteStudent " + id)
-    try {
-        await sql`DELETE FROM studentmaster WHERE studentid = ${id}`;
-        revalidatePath('/dashboard/students');
-        return { message: 'Deleted Student.' };
-      } catch (error) {
-        return { message: 'Database Error: Failed to Delete Student.' };
-      }
+const UpdateStudent = StudentSchema.omit({});
+export async function updateStudent(
+  id: string,
+  prevState: StudentState,
+  formData: FormData,
+) {
+  const validatedFields = UpdateStudent.safeParse({
+    name: formData.get('name'),
+    fathername: formData.get('fathername'),
+    surname: formData.get('surname'),
+    dob: formData.get('dob'),
+    mobile1: formData.get('mobile1'),
+    mobile2: formData.get('mobile2'),
+    address: formData.get('address'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Update Student.',
+    };
   }
 
-  export async function authenticate(
-    prevState: string | undefined,
-    formData: FormData,
-  ) {
-    try {
-      await signIn('credentials', formData);
-    } catch (error) {
-      if (error instanceof AuthError) {
-        switch (error.type) {
-          case 'CredentialsSignin':
-            return 'Invalid credentials.';
-          default:
-            return 'Something went wrong.';
-        }
-      }
-      throw error;
-    }
+  const { name, fathername, surname, dob, mobile1, mobile2, address } = validatedFields.data;
+
+  try {
+    await sql`
+      UPDATE studentmaster
+      SET name = ${name}, fathername = ${fathername}, surname = ${surname}, dob = ${dob}, mobile1 = ${mobile1}, mobile2 = ${mobile2}, address = ${address}
+      WHERE studentid = ${id}
+    `;
+  } catch (error) {
+    return { message: 'Database Error: Failed to Update Student.' };
   }
+
+  revalidatePath('/dashboard/students');
+  redirect('/dashboard/students');
+}
+
+const EnrollStudent = EnrollStudentSchema.omit({});
+export async function enrollStudent(
+  id: string,
+  prevState: EnrollStudentState,
+  formData: FormData,
+) {
+  const validatedFields = EnrollStudent.safeParse({
+    termid: formData.get('termid'),
+    standardid: formData.get('standardid'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Enroll Student.',
+    };
+  }
+
+  const { termid, standardid } = validatedFields.data;
+
+
+  try {
+    await sql`
+      INSERT INTO enrollment (termid, studentid,standardid)
+      VALUES (${termid}, ${id}, ${standardid})
+    `;
+  } catch (error) {
+    return { message: 'Database Error: Failed to Insert Student Enrollment.' };
+  }
+
+  revalidatePath('/dashboard/students');
+  redirect('/dashboard/students');
+}
+
+export async function deleteStudent(id: string) {
+  // throw new Error('Failed to Delete Invoice');
+  console.log("In deleteStudent " + id)
+  try {
+    await sql`DELETE FROM studentmaster WHERE studentid = ${id}`;
+    revalidatePath('/dashboard/students');
+    return { message: 'Deleted Student.' };
+  } catch (error) {
+    return { message: 'Database Error: Failed to Delete Student.' };
+  }
+}
+
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    await signIn('credentials', formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.';
+        default:
+          return 'Something went wrong.';
+      }
+    }
+    throw error;
+  }
+}

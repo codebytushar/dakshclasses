@@ -64,6 +64,7 @@ export type StudentsTable = {
   mobile1: number;
   mobile2: number;
   address: string;
+  standardid: number;
 };
 
 export type CustomersTableType = {
@@ -99,7 +100,7 @@ export type InvoiceForm = {
 };
 
 export type StudentForm = {
-  id: string;
+  studentid: string;
   name: string;
   fathername: string;
   surname: string;
@@ -107,4 +108,18 @@ export type StudentForm = {
   mobile1: number;
   mobile2: number;
   address: string;
+};
+
+export type AcademicTermForm = {
+  termid: number;
+  year: number;
+  semester: number;
+  startdate: Date;
+  enddate: Date;
+};
+
+export type StandardsForm = {
+  standardid: number;
+  board: number;
+  termid: number;
 };

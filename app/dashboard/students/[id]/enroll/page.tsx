@@ -1,6 +1,6 @@
-import Form from '@/app/ui/students/edit-form';
+import Form from '@/app/ui/students/enroll-form'
 import Breadcrumbs from '@/app/ui/students/breadcrumbs';
-import { fetchStudentById } from '@/app/lib/data';
+import { fetchStandards, fetchStudentById, fetchTerms } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
 
 
@@ -13,19 +13,25 @@ export default async function Page({ params }: { params: { id: string } }) {
       if (!student) {
         notFound();
       }
+      const [terms] = await Promise.all([
+        fetchTerms(),
+      ]);
+      const [standards] = await Promise.all([
+        fetchStandards(),
+      ]);
   return (
     <main>
       <Breadcrumbs
         breadcrumbs={[
           { label: 'Students', href: '/dashboard/students' },
           {
-            label: 'Edit Student',
+            label: 'Enroll Student',
             href: `/dashboard/students/${id}/edit`,
             active: true,
           },
         ]}
       />
-      <Form student={student} />
+      <Form student={student} terms={terms} standards={standards}/>
     </main>
   );
 }

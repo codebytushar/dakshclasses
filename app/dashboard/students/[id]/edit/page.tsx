@@ -1,4 +1,4 @@
-// import Form from '@/app/ui/students/edit-form';
+import Form from '@/app/ui/students/edit-form';
 import Breadcrumbs from '@/app/ui/students/breadcrumbs';
 import { fetchStudentById } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
@@ -25,7 +25,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           },
         ]}
       />
-      {/* <Form student={student} /> */}
+      <Form student={student} />
     </main>
   );
 }

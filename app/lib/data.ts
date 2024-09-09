@@ -200,7 +200,7 @@ export async function fetchStudentById(id: string) {
   try {
     const data = await sql<StudentForm>`
       SELECT
-        studentmaster.id,
+        studentmaster.studentid,
         studentmaster.name,
         studentmaster.fathername,
         studentmaster.surname,
@@ -209,7 +209,7 @@ export async function fetchStudentById(id: string) {
         studentmaster.mobile2,
         studentmaster.address
       FROM studentmaster
-      WHERE studentmaster.id = ${id};
+      WHERE studentmaster.studentid = ${id};
     `;
 
     return data.rows[0];

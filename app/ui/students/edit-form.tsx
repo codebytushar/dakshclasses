@@ -1,156 +1,251 @@
-// 'use client';
+'use client';
 
-// import { CustomerField, InvoiceForm, StudentForm } from '@/app/lib/definitions';
-// import {
-//   CheckIcon,
-//   ClockIcon,
-//   CurrencyDollarIcon,
-//   UserCircleIcon,
-// } from '@heroicons/react/24/outline';
-// import Link from 'next/link';
-// import { Button } from '@/app/ui/button';
-// import { updateInvoice, State, StudentState } from '@/app/lib/actions';
-// import { useActionState } from 'react';
+import {StudentForm } from '@/app/lib/definitions';
+import {
+    CalendarIcon,
+  CheckIcon,
+  ClockIcon,
+  CurrencyDollarIcon,
+  DocumentTextIcon,
+  PhoneIcon,
+  UserCircleIcon,
+  UserIcon
+} from '@heroicons/react/24/outline';
+import { formatDateToLocal } from '@/app/lib/utils';
+import Link from 'next/link';
+import { Button } from '@/app/ui/button';
+import { updateStudent, StudentState } from '@/app/lib/actions';
+import { useActionState } from 'react';
 
 
 
-// export default function EditInvoiceForm({
-//   student,
-// }: {
-//   student: StudentForm;
-// }) {
-//   const initialState: StudentState = { message: null, errors: {} };
-//   const updateStudentWithId = updateStudent.bind(null, student.id);
-//   const [state, formAction] = useActionState(updateStudentWithId, initialState);
+export default function EditInvoiceForm({
+  student,
+}: {
+  student: StudentForm;
+}) {
+  const initialState: StudentState = { message: null, errors: {} };
+  const updateStudentWithId = updateStudent.bind(null, student.studentid);
+  const [state, formAction] = useActionState(updateStudentWithId, initialState);
 
-//   return (
-//     <form action={formAction}>
-//       <div className="rounded-md bg-gray-50 p-4 md:p-6">
-//         {/* Customer Name */}
-//         <div className="mb-4">
-//           <label htmlFor="customer" className="mb-2 block text-sm font-medium">
-//             Choose customer
-//           </label>
-//           <div className="relative">
-//             <select
-//               id="customer"
-//               name="customerId"
-//               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-//               defaultValue={invoice.customer_id}
-//             >
-//               <option value="" disabled>
-//                 Select a customer
-//               </option>
-//               {customers.map((customer) => (
-//                 <option key={customer.id} value={customer.id}>
-//                   {customer.name}
-//                 </option>
-//               ))}
-//             </select>
-//             <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
-//           </div>
-//           <div id="customer-error" aria-live="polite" aria-atomic="true">
-//             {state.errors?.customerId &&
-//               state.errors.customerId.map((error: string) => (
-//                 <p className="mt-2 text-sm text-red-500" key={error}>
-//                   {error}
-//                 </p>
-//               ))}
-//           </div>
-//         </div>
+  return (
+    <form action={formAction}>
+      <div className="rounded-md bg-gray-50 p-4 md:p-6">
+        <div className='flex flex-row gap-10'>
+          <div className="mb-4">
+            <label htmlFor="name" className="mb-2 block text-sm font-medium">
+              Enter Stuent Name
+            </label>
+            <div className="relative mt-2 rounded-md">
+              <div className="relative">
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="Enter Student Name"
+                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                  defaultValue={student.name}
+                  aria-describedby="name-error"
+                />
+                <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+              </div>
+              <div id="name-error" aria-live="polite" aria-atomic="true">
+                {state.errors?.name &&
+                  state.errors.name.map((error: string) => (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div>
+            </div>
+          </div>
 
-//         {/* Invoice Amount */}
-//         <div className="mb-4">
-//           <label htmlFor="amount" className="mb-2 block text-sm font-medium">
-//             Choose an amount
-//           </label>
-//           <div className="relative mt-2 rounded-md">
-//             <div className="relative">
-//               <input
-//                 id="amount"
-//                 name="amount"
-//                 type="number"
-//                 step="0.01"
-//                 defaultValue={invoice.amount}
-//                 placeholder="Enter USD amount"
-//                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-//                 aria-labelledby='amount-error'
-//               />
-//               <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-//             </div>
-//             <div id="amount-error" aria-live="polite" aria-atomic="true">
-//               {state.errors?.amount &&
-//                 state.errors.amount.map((error: string) => (
-//                   <p className="mt-2 text-sm text-red-500" key={error}>
-//                     {error}
-//                   </p>
-//                 ))}
-//             </div>
-//           </div>
-//         </div>
+          <div className="mb-4">
+            <label htmlFor="fathername" className="mb-2 block text-sm font-medium">
+              Enter Parent Name
+            </label>
+            <div className="relative mt-2 rounded-md">
+              <div className="relative">
+                <input
+                  id="fathername"
+                  name="fathername"
+                  type="text"
+                  placeholder="Enter Parent Name"
+                  defaultValue={student.fathername}
+                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                  aria-describedby="fathername-error"
+                />
+                <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+              </div>
+              <div id="fathername-error" aria-live="polite" aria-atomic="true">
+                {state.errors?.fathername &&
+                  state.errors.fathername.map((error: string) => (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div>
+            </div>
+          </div>
 
-//         {/* Invoice Status */}
-//         <fieldset>
-//           <legend className="mb-2 block text-sm font-medium">
-//             Set the invoice status
-//           </legend>
-//           <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">
-//             <div className="flex gap-4">
-//               <div className="flex items-center">
-//                 <input
-//                   id="pending"
-//                   name="status"
-//                   type="radio"
-//                   value="pending"
-//                   defaultChecked={invoice.status === 'pending'}
-//                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
-//                   aria-labelledby='status-error'
-//                 />
-//                 <label
-//                   htmlFor="pending"
-//                   className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600"
-//                 >
-//                   Pending <ClockIcon className="h-4 w-4" />
-//                 </label>
-//               </div>
-//               <div className="flex items-center">
-//                 <input
-//                   id="paid"
-//                   name="status"
-//                   type="radio"
-//                   value="paid"
-//                   defaultChecked={invoice.status === 'paid'}
-//                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
-//                   aria-labelledby='status-error'
-//                 />
-//                 <label
-//                   htmlFor="paid"
-//                   className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-green-500 px-3 py-1.5 text-xs font-medium text-white"
-//                 >
-//                   Paid <CheckIcon className="h-4 w-4" />
-//                 </label>
-//               </div>
-//             </div>
-//             <div id="status-error" aria-live="polite" aria-atomic="true">
-//               {state.errors?.status &&
-//                 state.errors.status.map((error: string) => (
-//                   <p className="mt-2 text-sm text-red-500" key={error}>
-//                     {error}
-//                   </p>
-//                 ))}
-//             </div>
-//           </div>
-//         </fieldset>
-//       </div>
-//       <div className="mt-6 flex justify-end gap-4">
-//         <Link
-//           href="/dashboard/invoices"
-//           className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
-//         >
-//           Cancel
-//         </Link>
-//         <Button type="submit">Edit Invoice</Button>
-//       </div>
-//     </form>
-//   );
-// }
+          <div className="mb-4">
+            <label htmlFor="surname" className="mb-2 block text-sm font-medium">
+              Enter SurName
+            </label>
+            <div className="relative mt-2 rounded-md">
+              <div className="relative">
+                <input
+                  id="surname"
+                  name="surname"
+                  type="text"
+                  placeholder="Enter SurName"
+                  defaultValue={student.surname}
+                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                  aria-describedby="surname-error"
+                />
+                <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+              </div>
+              <div id="surname-error" aria-live="polite" aria-atomic="true">
+                {state.errors?.surname &&
+                  state.errors.surname.map((error: string) => (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className='flex flex-row gap-10'>
+
+          <div className="mb-5">
+            <label htmlFor="dob" className="mb-2 block text-sm font-medium">
+              Enter Birth Date
+            </label>
+            <div className="relative mt-2 rounded-md">
+              <div className="relative">
+                <input
+                  id="dob"
+                  name="dob"
+                  type="text"
+                  placeholder="Birthdate(YYYY-MM-DD)"
+                  defaultValue={formatDateToLocal(student.dob.toDateString())}
+                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                  aria-describedby="dob-error"
+                />
+                <CalendarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+              </div>
+              <div id="dob-error" aria-live="polite" aria-atomic="true">
+                {state.errors?.dob &&
+                  state.errors.dob.map((error: string) => (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="mobile1" className="mb-2 block text-sm font-medium">
+              Enter Mobile 1
+            </label>
+            <div className="relative mt-2 rounded-md">
+              <div className="relative">
+                <input
+                  id="mobile1"
+                  name="mobile1"
+                  type="text"
+                  placeholder="Enter Mobile 1"
+                  defaultValue={student.mobile1}
+                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                  aria-describedby="mobile1-error"
+                />
+                <PhoneIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+              </div>
+              <div id="mobile1-error" aria-live="polite" aria-atomic="true">
+                {state.errors?.mobile1 &&
+                  state.errors.mobile1.map((error: string) => (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="mobile2" className="mb-2 block text-sm font-medium">
+              Enter Mobile 2
+            </label>
+            <div className="relative mt-2 rounded-md">
+              <div className="relative">
+                <input
+                  id="mobile2"
+                  name="mobile2"
+                  type="text"
+                  placeholder="Enter Mobile 2"
+                  defaultValue={student.mobile2}
+                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                  aria-describedby="mobile2-error"
+                />
+                <PhoneIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+              </div>
+              <div id="mobile1-error" aria-live="polite" aria-atomic="true">
+                {state.errors?.mobile2 &&
+                  state.errors.mobile2.map((error: string) => (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+
+        <div className="mb-4">
+          <label htmlFor="address" className="mb-2 block text-sm font-medium">
+            Enter Address
+          </label>
+          <div className="relative mt-2 rounded-md">
+            <div className="relative">
+              <input
+                id="address"
+                name="address"
+                type="text"
+                placeholder="Enter Address"
+                defaultValue={student.address}
+                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                aria-describedby="address-error"
+              />
+              <DocumentTextIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            </div>
+            <div id="address-error" aria-live="polite" aria-atomic="true">
+              {state.errors?.address &&
+                state.errors.address.map((error: string) => (
+                  <p className="mt-2 text-sm text-red-500" key={error}>
+                    {error}
+                  </p>
+                ))}
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+      <div className="mt-6 flex justify-end gap-4">
+        <Link
+          href="/dashboard/students"
+          className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
+        >
+          Cancel
+        </Link>
+        <Button type="submit">Update Student</Button>
+      </div>
+    </form>
+  );
+}

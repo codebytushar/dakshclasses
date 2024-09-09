@@ -1,6 +1,7 @@
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { deleteStudent } from '@/app/lib/actions';
+import { PlusCircleIcon } from '@heroicons/react/24/solid';
 
 
 export function CreateStudent() {
@@ -15,13 +16,24 @@ export function CreateStudent() {
   );
 }
 
+export function EnrollStudent({ id }: { id: string }) {
+  return (
+    <Link
+    href={`/dashboard/students/${id}/enroll`}
+    className="rounded-md border p-2 hover:bg-gray-100"
+    >
+      <PlusCircleIcon className="w-5 fill-green-500" />
+    </Link>
+  );
+}
+
 export function UpdateStudent({ id }: { id: string }) {
   return (
     <Link
     href={`/dashboard/students/${id}/edit`}
     className="rounded-md border p-2 hover:bg-gray-100"
     >
-      <PencilIcon className="w-5" />
+      <PencilIcon className="w-5 fill-yellow-500" />
     </Link>
   );
 }
@@ -33,7 +45,7 @@ export function DeleteStudent({ id }: { id: string }) {
     <form action={deleteStudentWithId}>
     <button className="rounded-md border p-2 hover:bg-gray-100">
         <span className="sr-only">Delete</span>
-        <TrashIcon className="w-5" />
+        <TrashIcon className="w-5 fill-red-300" />
       </button>
     </form>
       

@@ -32,6 +32,11 @@ const StudentSchema = z.object({
   address: z.string().min(5, "Address is Required").max(255, "Address must be at most 255 characters"),
 });
 
+const EnrollStudentSchema = z.object({
+  termid: z.string().min(1, "Term ID is required"),
+  standardid: z.string().min(1, "Standard ID is required"),
+});
+
 export type StudentState = {
   errors?: {
     name?: string[];
@@ -50,6 +55,14 @@ export type State = {
     customerId?: string[];
     amount?: string[];
     status?: string[];
+  };
+  message?: string | null;
+};
+
+export type EnrollStudentState = {
+  errors?: {
+    termid?: string[];
+    standardid?: string[];
   };
   message?: string | null;
 };
@@ -226,6 +239,40 @@ export async function updateStudent(
     `;
   } catch (error) {
     return { message: 'Database Error: Failed to Update Student.' };
+  }
+
+  revalidatePath('/dashboard/students');
+  redirect('/dashboard/students');
+}
+
+const EnrollStudent = EnrollStudentSchema.omit({});
+export async function enrollStudent(
+  id: string,
+  prevState: EnrollStudentState,
+  formData: FormData,
+) {
+  const validatedFields = EnrollStudent.safeParse({
+    termid: formData.get('termid'),
+    standardid: formData.get('standardid'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Enroll Student.',
+    };
+  }
+
+  const { termid, standardid } = validatedFields.data;
+
+
+  try {
+    await sql`
+      INSERT INTO enrollment (termid, studentid,standardid)
+      VALUES (${termid}, ${id}, ${standardid})
+    `;
+  } catch (error) {
+    return { message: 'Database Error: Failed to Insert Student Enrollment.' };
   }
 
   revalidatePath('/dashboard/students');

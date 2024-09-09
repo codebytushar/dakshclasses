@@ -1,6 +1,5 @@
 import Image from 'next/image';
-import { UpdateStudent, DeleteStudent } from '@/app/ui/students/buttons';
-import InvoiceStatus from '@/app/ui/invoices/status';
+import { UpdateStudent, DeleteStudent, EnrollStudent } from '@/app/ui/students/buttons';
 import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
 import { fetchFilteredStudents } from '@/app/lib/data';
 
@@ -61,9 +60,12 @@ export default async function StudentsTable({
                 <th scope="col" className="px-3 py-5 font-medium">
                   Address
                 </th>
-                <th scope="col" className="relative py-3 pl-6 pr-3">
-                  <span className="sr-only">Edit</span>
+                <th scope="col" className="px-3 py-5 font-medium">
+                  Standard
                 </th>
+                {/* <th scope="col" className="relative py-3 pl-6 pr-3">
+                  <span className="sr-only">Edit</span>
+                </th> */}
               </tr>
             </thead>
             <tbody className="bg-white">
@@ -90,8 +92,12 @@ export default async function StudentsTable({
                   <td className="whitespace-nowrap px-3 py-3">
                   {student.address}
                   </td>
+                  <td className="whitespace-nowrap px-3 py-3">
+                  {student.standardid ? student.standardid : '-'}
+                  </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
+                      {student.standardid ? <></> : <EnrollStudent id={student.studentid} />}
                       <UpdateStudent id={student.studentid} />
                       <DeleteStudent id={student.studentid} />
                     </div>

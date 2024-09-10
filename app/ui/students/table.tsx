@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { UpdateStudent, DeleteStudent, EnrollStudent } from '@/app/ui/students/buttons';
+import { UpdateStudent, DeleteStudent, EnrollStudent, AddFeesPayment, FeesPaymentHistory } from '@/app/ui/students/buttons';
 import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
 import { fetchFilteredStudents } from '@/app/lib/data';
 
@@ -49,19 +49,20 @@ export default async function StudentsTable({
                   Name
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  Surname
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium">
                   Dob
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   Mobile 1
                 </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Address
-                </th>
+              
                 <th scope="col" className="px-3 py-5 font-medium">
                   Standard
+                </th>
+                <th scope="col" className="px-3 py-5 font-medium">
+                  Fees
+                </th>
+                <th scope="col" className="px-3 py-5 font-medium">
+                  Fees Status
                 </th>
                 {/* <th scope="col" className="relative py-3 pl-6 pr-3">
                   <span className="sr-only">Edit</span>
@@ -77,12 +78,10 @@ export default async function StudentsTable({
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex items-center gap-3">
                      
-                      <p>{student.name}</p>
+                      <p>{student.name + " " + student.surname}</p>
                     </div>
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    {student.surname}
-                  </td>
+                 
                   <td className="whitespace-nowrap px-3 py-3">
                   {formatDateToLocal(student.dob)}
                   </td>
@@ -90,14 +89,20 @@ export default async function StudentsTable({
                   {student.mobile1}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                  {student.address}
+                  {student.standardid ? student.standardid : '-'}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                  {student.standardid ? student.standardid : '-'}
+                  {student.amount}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-3">
+                  {student.feespaymentstatus}
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
-                      {student.standardid ? <></> : <EnrollStudent id={student.studentid} />}
+
+                      {student.standardid ? <> </>: <EnrollStudent id={student.studentid} />}
+                      {student.feespaymentstatus === 'pending' ? <AddFeesPayment id={student.studentid} /> : <></> }
+                      {student.standardid ? <FeesPaymentHistory id={student.studentid} /> : <></>}
                       <UpdateStudent id={student.studentid} />
                       <DeleteStudent id={student.studentid} />
                     </div>

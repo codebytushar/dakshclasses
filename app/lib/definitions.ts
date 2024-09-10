@@ -65,6 +65,9 @@ export type StudentsTable = {
   mobile2: number;
   address: string;
   standardid: number;
+  termid: number;
+  amount: number;
+  feespaymentstatus: string;
 };
 
 export type CustomersTableType = {

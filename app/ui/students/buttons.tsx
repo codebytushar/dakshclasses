@@ -1,7 +1,7 @@
-import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { CurrencyDollarIcon, PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { deleteStudent } from '@/app/lib/actions';
-import { PlusCircleIcon } from '@heroicons/react/24/solid';
+import { PlusCircleIcon, RectangleStackIcon } from '@heroicons/react/24/solid';
 
 
 export function CreateStudent() {
@@ -23,6 +23,28 @@ export function EnrollStudent({ id }: { id: string }) {
     className="rounded-md border p-2 hover:bg-gray-100"
     >
       <PlusCircleIcon className="w-5 fill-green-500" />
+    </Link>
+  );
+}
+
+export function FeesPaymentHistory({ id }: { id: string }) {
+  return (
+    <Link
+    href={`/dashboard/students/${id}/paymenthistory`}
+    className="rounded-md border p-2 hover:bg-gray-100"
+    >
+      <RectangleStackIcon className="w-5 fill-yellow-500" />
+    </Link>
+  );
+}
+
+export function AddFeesPayment({ id }: { id: string }) {
+  return (
+    <Link
+    href={`/dashboard/students/${id}/addfeespayment`}
+    className="rounded-md border p-2 hover:bg-gray-100"
+    >
+      <CurrencyDollarIcon className="w-5 fill-maroon-500" />
     </Link>
   );
 }

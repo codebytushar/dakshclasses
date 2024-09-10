@@ -143,13 +143,17 @@ export async function fetchFilteredStudents(
     sm.address,
     s.standardid,
     s.board,
-    e.termid
+    e.termid,
+    f.amount,
+    e.feespaymentstatus
 FROM 
     StudentMaster as sm
 LEFT JOIN 
     Enrollment as e ON sm.studentid = e.studentid
 LEFT JOIN 
     Standard as s ON e.standardid = s.standardid
+LEFT JOIN
+    Fees as f ON s.standardid = f.standardid
       WHERE
         sm.name ILIKE ${`%${query}%`} OR
         sm.surname ILIKE ${`%${query}%`} OR

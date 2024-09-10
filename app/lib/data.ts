@@ -8,6 +8,7 @@ import {
   LatestInvoiceRaw,
   Revenue,
   StandardsForm,
+  StandardsTable,
   StudentForm,
   StudentsTable,
 } from './definitions';
@@ -291,6 +292,38 @@ export async function fetchStandards() {
   } catch (err) {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch Standards.');
+  }
+}
+
+export async function fetchFilteredStandards(
+  query: string,
+  currentPage: number,
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const standards = await sql<StandardsTable>`
+    SELECT 
+    s.standardid, 
+    s.board, 
+    s.termid, 
+    at.year, 
+    COUNT(e.studentid) AS students
+FROM 
+    Standard s
+JOIN 
+    AcademicTerms at ON s.termid = at.termid
+LEFT JOIN 
+    enrollment e ON s.standardid = e.standardid AND e.termid = s.termid AND e.enrollmentstatus = 'active'
+GROUP BY 
+    s.standardid, s.board, s.termid, at.year
+ORDER BY s.standardid;
+    `;
+
+    return standards.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch studentmaster.');
   }
 }
 

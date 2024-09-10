@@ -120,6 +120,14 @@ export type AcademicTermForm = {
 
 export type StandardsForm = {
   standardid: number;
-  board: number;
+  board: string;
   termid: number;
+};
+
+export type StandardsTable = {
+  standardid: number;
+  board: string;
+  termid: number;
+  year: number;
+  students: number;
 };

@@ -5,11 +5,13 @@ import {
   HomeIcon,
   DocumentDuplicateIcon,
   UsersIcon,
-  SparklesIcon
+  SparklesIcon,
+  PencilSquareIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
+import { QuestionMarkCircleIcon } from '@heroicons/react/24/solid';
 
 
 
@@ -23,6 +25,7 @@ const links = [
     icon: UsersIcon,
   },
   { name: 'Standards', href: '/dashboard/standards', icon: SparklesIcon },
+  { name: 'Exams', href: '/dashboard/exams', icon: PencilSquareIcon },
 ];
 
 export default function NavLinks() {

@@ -70,6 +70,25 @@ export type StudentsTable = {
   feespaymentstatus: string;
 };
 
+export type ExamsTable = {
+  testid: number;
+  termid: number;
+  standardid: number;
+  type: string;
+};
+
+export type ExamDatesTable = {
+  testid: number;
+  standardid: number;
+  type: string;
+  date: Date;
+  subjectid: number;
+  subjectname: string;
+  board: string;
+  totalmarks: number;
+  passingmarks: number;
+};
+
 export type CustomersTableType = {
   id: string;
   name: string;

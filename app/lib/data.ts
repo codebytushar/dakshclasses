@@ -3,6 +3,8 @@ import {
   AcademicTermForm,
   CustomerField,
   CustomersTableType,
+  ExamDatesTable,
+  ExamsTable,
   InvoiceForm,
   InvoicesTable,
   LatestInvoiceRaw,
@@ -187,6 +189,71 @@ export async function fetchStudentssPages(query: string) {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch total number of students.');
+  }
+}
+
+export async function fetchFilteredExams(
+  query: string,
+  currentPage: number,
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const exammaster = await sql<ExamsTable>`
+    SELECT 
+    tm.testid,
+    tm.termid,
+    tm.standardid,
+    tm.type
+FROM 
+    TestMaster as tm
+      WHERE
+        tm.standardid::text ILIKE ${`%${query}%`} OR
+        tm.type ILIKE ${`%${query}%`} OR
+        tm.termid::text ILIKE ${`%${query}%`}
+      ORDER BY tm.testid DESC
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+    `;
+
+    return exammaster.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch studentmaster.');
+  }
+}
+
+export async function fetchExamDates(
+  testid: string
+) {
+
+  try {
+    const examdates = await sql<ExamDatesTable>`
+    SELECT 
+   tm.testid,
+   tm.standardid,
+   tm.type,
+   td.date,
+   s.subjectname,
+   s.subjectid,
+   st.board,
+   td.totalmarks,
+   td.passingmarks
+FROM 
+    testmaster tm
+JOIN 
+    testdates td ON tm.testid = td.testid
+JOIN 
+    subjects s ON s.subjectid = td.subjectid
+JOIN
+    standard st ON tm.standardid = st.standardid
+    WHERE td.testid = ${testid}
+      ORDER BY td.subjectid ASC
+    `;
+
+    return examdates.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch studentmaster.');
   }
 }
 

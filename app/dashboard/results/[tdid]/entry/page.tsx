@@ -1,18 +1,19 @@
-import Form from '@/app/ui/students/addfeespayment-form'
+import ResultEntry from '@/app/ui/results/resultsentry';
 import Breadcrumbs from '@/app/ui/students/breadcrumbs';
 import { fetchStandards, fetchStudentById, fetchTerms } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
 
 
  
-export default async function Page({ params }: { params: { id: string } }) {
-    const id = params.id;
+export default async function Page({ params }: { params: { tdid: string } }) {
+    const id = params.tdid;
+    console.log("HHHHH" + id)
     const [student] = await Promise.all([
         fetchStudentById(id),
       ]);
-      if (!student) {
-        notFound();
-      }
+      // if (!student) {
+      //   notFound();
+      // }
       const [terms] = await Promise.all([
         fetchTerms(),
       ]);
@@ -23,15 +24,17 @@ export default async function Page({ params }: { params: { id: string } }) {
     <main>
       <Breadcrumbs
         breadcrumbs={[
-          { label: 'Students', href: '/dashboard/students' },
+          { label: 'Results', href: '/dashboard/exams' },
           {
-            label: 'Add Fees Payment',
-            href: `/dashboard/students/${id}/addfeespayment`,
-            active: true,
+            label: 'Result Entry',
+            href: `/dashboard/exams/${id}/examdates`,
+            active: false,
           },
+        
         ]}
       />
-      <Form student={student} terms={terms} standards={standards}/>
+      {/* <ExamDatesTable testid={id}/> */}
+      <ResultEntry tdid={id}/>
     </main>
   );
 }

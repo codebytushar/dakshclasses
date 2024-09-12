@@ -1,15 +1,14 @@
 import Image from 'next/image';
 import { ViewExamDates, EnterResult } from '@/app/ui/exams/buttons';
 import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
-import { fetchExamDates } from '@/app/lib/data';
+import { fetchStudentsForTDID } from '@/app/lib/data';
 
-export default async function ExamDatesTable({
-  testid,
+export default async function ResultEntry({
+  tdid,
 }: {
-  testid: string;
+  tdid: string;
 }) {
-  const examdates = await fetchExamDates(testid);
-
+  const students = await fetchStudentsForTDID(tdid);
   return (
 
     <div className="mt-6 flow-root">
@@ -18,36 +17,36 @@ export default async function ExamDatesTable({
         <div className="rou nded-lg bg-gray-50 p-2 md:pt-0">
         
           <table className="hidden min-w-full text-gray-900 md:table">
-          <caption className="text-lg font-semibold text-gray-800 p-4 bg-gray-100"> Standard : {examdates[0].standardid} <p></p>
+          {/* <caption className="text-lg font-semibold text-gray-800 p-4 bg-gray-100"> Standard : {examdates[0].standardid} <p></p>
             Board : {examdates[0].board}  <p></p>
-            Exam Type : {examdates[0].type}</caption>
+            Exam Type : {examdates[0].type}</caption> */}
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>
                 {/* <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
                   Exam ID
                 </th> */}
                 <th scope="col" className="px-3 py-5 font-medium">
-                 Date
+                 Student ID
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  Subject
+                  Student Name
                 </th>
               
-                <th scope="col" className="px-3 py-5 font-medium">
+                {/* <th scope="col" className="px-3 py-5 font-medium">
                   Total Marks
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   Passing Marks
-                </th>
+                </th> */}
                 {/* <th scope="col" className="relative py-3 pl-6 pr-3">
                   <span className="sr-only">Edit</span>
                 </th> */}
               </tr>
             </thead>
             <tbody className="bg-white">
-              {examdates?.map((date) => (
+              {students?.map((student) => (
                 <tr
-                  key={date.subjectid}
+                  key={student.studentid}
                   className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
                 >
                   {/* <td className="whitespace-nowrap py-3 pl-6 pr-3">
@@ -58,17 +57,12 @@ export default async function ExamDatesTable({
                   </td> */}
                  
                   <td className="whitespace-nowrap px-3 py-3">
-                  {formatDateToLocal(date.date.toString())}
+                  {student.studentid}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                  {date.subjectname}
+                  {student.name}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                  {date.totalmarks}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                  {date.passingmarks}
-                  </td>
+               
                 
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-start gap-3">
@@ -77,7 +71,7 @@ export default async function ExamDatesTable({
                       {student.feespaymentstatus === 'pending' ? <AddFeesPayment id={student.studentid} /> : <></> }
                       {student.standardid ? <FeesPaymentHistory id={student.studentid} /> : <></>} */}
                       {/* <ViewExamDates id={1.to} /> */}
-                      <EnterResult tdid={date.tdid.toString()} />
+                      {/* <EnterResult tdid={date.tdid.toString()} /> */}
                     </div>
                   </td>
                 </tr>

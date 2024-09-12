@@ -78,6 +78,7 @@ export type ExamsTable = {
 };
 
 export type ExamDatesTable = {
+  tdid: number;
   testid: number;
   standardid: number;
   type: string;

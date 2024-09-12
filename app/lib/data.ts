@@ -233,6 +233,7 @@ export async function fetchExamDates(
    tm.standardid,
    tm.type,
    td.date,
+   td.tdid,
    s.subjectname,
    s.subjectid,
    st.board,
@@ -251,6 +252,41 @@ JOIN
     `;
 
     return examdates.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch studentmaster.');
+  }
+}
+
+export async function fetchStudentsForTDID(
+  tdid: string
+) {
+
+  try {
+    const students = await sql<StudentsTable>`
+    SELECT 
+    sm.studentid,
+    sm.name,
+    sm.fathername,
+    sm.surname,
+    sm.dob,
+    sm.mobile1,
+    sm.mobile2,
+    sm.address
+FROM 
+    StudentMaster sm
+JOIN 
+    enrollment e ON sm.studentid = e.studentid
+JOIN 
+    testmaster tm ON tm.termid = e.termid and tm.standardid = e.standardid
+JOIN 
+    TestDates td ON td.testid = tm.testid
+WHERE 
+    td.tdid = ${tdid};
+    `;
+
+    console.log("----------" + students.rows)
+    return students.rows;
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch studentmaster.');
